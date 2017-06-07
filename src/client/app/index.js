@@ -4,7 +4,7 @@ import AppContainer from './containers'
 
 class App extends React.Component {
   render () {
-    return <AppContainer />;
+    return <AppContainer>something</AppContainer>;
   }
 }
 
