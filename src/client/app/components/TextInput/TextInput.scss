@@ -1,0 +1,20 @@
+.root {
+    background: white;
+    padding: 5px;
+
+    label {
+        padding-right: 5px;
+    }
+
+    input {
+        height: 35px;
+        width: 230px;
+        border-width: 0 0 2px 0;
+    }
+
+    input:focus {
+        outline-width: 0;
+        border-bottom: 1;
+        border-color: #03A9F4;
+    }
+}

@@ -2,10 +2,15 @@
     height: 45px;
     background: #03A9F4;
     display: flex;
-    align-items: center;
 
     label {
         font-size: 23px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .button {
+        display: flex;
     }
 }
 

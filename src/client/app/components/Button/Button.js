@@ -3,7 +3,7 @@ import React from 'react';
 export default class Button extends React.Component {
     render() {
         return(
-            <button>{label}</button>
+            <button onClick={this.props.onAddClick}>{this.props.label}</button>
         );
     }
 }
