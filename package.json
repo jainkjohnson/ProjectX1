@@ -4,7 +4,7 @@
   "description": "for learning",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev-cli": "webpack-dev-server  --config client/webpack/dev.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "file-loader": "^0.11.1",
     "font-awesome": "^4.7.0",
     "font-awesome-webpack": "0.0.5-beta.2",
+    "html-webpack-plugin": "^2.29.0",
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
     "node-sass": "^4.5.3",
@@ -29,6 +30,7 @@
     "sass-loader": "^6.0.5",
     "style-loader": "^0.18.1",
     "url-loader": "^0.5.8",
-    "webpack": "^2.6.0"
+    "webpack": "^2.6.0",
+    "webpack-dev-server": "^2.6.1"
   }
 }

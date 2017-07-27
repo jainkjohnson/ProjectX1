@@ -3,8 +3,8 @@ import {render} from 'react-dom';
 import { Provider } from 'react-redux'
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware, compose } from 'redux'
-import AppContainer from './containers'
-import reducer from './redux/reducer/reducer'
+import AppContainer from './src/containers'
+import reducer from './src/redux/reducer/reducer'
 
 const logger = store => next => action => {
   console.log('dispatching', action)
