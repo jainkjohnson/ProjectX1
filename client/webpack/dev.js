@@ -2,20 +2,25 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
+// webpack dev server uses this port and host name 
 const PORT = 4000;
 const DEV_URL = `http://localhost:${PORT}`;
 
-const BUILD_DIR = path.resolve(__dirname, 'public');
-const APP_DIR = path.resolve(__dirname, 'client/src');
-
 const config = {
+
+  // jump back to the webpack directory  
   context: path.resolve(__dirname, '..'),
   entry: './index.js',
+
+  // dev server configuration
   devServer: {
     historyApiFallback: true,
     publicPath: DEV_URL,
     port: PORT,
   },
+
+  // Using webpack dev server so that there is no
+  // physical bundle.js file. It stores in the Ram.
   output: {
     filename: 'bundle.js',
     publicPath: DEV_URL
@@ -48,6 +53,8 @@ const config = {
       }
     ],
   },
+
+  // Created a index.ejs file such that there is no physical index.html file.
   plugins: [
     new HtmlWebpackPlugin({
       template: './webpack/templates/index.ejs',
