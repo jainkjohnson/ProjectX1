@@ -5,7 +5,7 @@ import styles from './ModalForAddToDo.scss';
 import TextInput from '../TextInput/TextInput';
 import { addClick } from '../../redux/reducer/homeReducer';
 
-const { func } = PropTypes;
+const { func, bool } = PropTypes;
 
 @connect(
   (state) => ({
@@ -19,7 +19,8 @@ const { func } = PropTypes;
 export default class ModalForAddToDo extends React.Component {
 
   static propTypes = {
-    addClick: func
+    addClick: func,
+    onAddClick: bool
   };
 
   closeModal = (event) => {
@@ -28,21 +29,20 @@ export default class ModalForAddToDo extends React.Component {
   }
 
   render() {
-    console.log('this.props.onAddClick', this.props.onAddClick);
-    return(
-        <div>
-        {
-            this.props.onAddClick 
-            ?
-            <div className={styles.root} onClick={this.closeModal}>
-                <div className={styles.modalContent}>
-                    <TextInput />
-                </div>
-            </div>
-            :
-            null
-        }    
+    return (
+      <div>
+      {
+        this.props.onAddClick
+        ?
+        <div className={styles.root} onClick={this.closeModal}>
+          <div className={styles.modalContent}>
+            <TextInput />
+          </div>
         </div>
+        :
+        null
+      }
+      </div>
     );
   }
 }
