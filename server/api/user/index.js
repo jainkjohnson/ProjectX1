@@ -1,34 +1,104 @@
 const router = require('express').Router();
-const User = require('../../modals/user');
+const UserThunks = require('./thunks.js');
 
-router.post('/register', (req, res) => {
-  const email = req.body.email;
-  const username = req.body.username;
-  const password = req.body.password;
+/**
+ * New user registration
+ * @name registerUser
+ *
+ *  method: POST
+ *  endpoint: /user/register
+ *  request.body:
+ *    {
+ *      email: test@test.com
+ *      username: test
+ *      password: *****
+ *    }
+ *  response:
+ *    {
+ *      message: ''
+ *    }
+ */
+router.post('/register', (req, res, next) => {
+  UserThunks.registerUser(
+    // param
+    req,
 
-  User.create({ email, username, password },
-    (err, user) => {
-      // user: To get the response of mongoose create function
-      // Get user_id to get the userId
-      if (err) {
-        // Handle error
-        if (err.code === 11000) {
-          const startStr = 'index: ';
-          const endStr = '_1 dup key';
-          const dupField = err.errmsg.substring(
-            err.errmsg.indexOf(startStr) + startStr.length,
-            err.errmsg.lastIndexOf(endStr)
-          );
-          // [TODO]: Change constants to seperate file
+    // On success callback
+    (userId) => {
+      req.session.userId = userId;
+      res.status(200).send({ message: `success ${userId}` });
+    },
 
-          return res.status(400).send({ error: `${dupField} already exits` });
-        }
+    // On error callback
+    (err) => {
+      if (err.error && err.status) {
+        res.status(err.status).send({ error: err.error });
+      } else {
+        // unexpected Error
+        next(err);
       }
-      // [TODO]: Change constants to seperate file
-
-      return res.status(200).send({ message: 'success' });
     }
   );
+});
+
+/**
+ * User authentication
+ * @name authenticateUser
+ *
+ *  method: POST
+ *  endpoint: /user/login
+ *  request.body:
+ *    {
+ *      email: test@test.com || username: test
+ *      password: *****
+ *    }
+ *  response:
+ *    {
+ *      message: ''
+ *    }
+ */
+router.post('/login', (req, res, next) => {
+  UserThunks.authenticateUser(
+    // param
+    req,
+
+    // On success callback
+    (user) => {
+      req.session.userId = user._id;
+      res.status(200).send({ message: 'Login success' });
+    },
+
+    // On error callback
+    (err) => {
+      if (err.error && err.status) {
+        res.status(err.status).send({ error: err.error });
+      } else {
+        // unexpected Error
+        next(err);
+      }
+    }
+  );
+});
+
+/**
+ * user logout
+ * @name userLogout
+ *
+ *  method: GET
+ *  endpoint: /user/logout
+ *  response:
+ *    {
+ *      message: ''
+ *    }
+ */
+router.get('/logout', (req, res, next) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) return next(err);
+    });
+
+    return res.status(200).send({ message: 'Logout successfully' });
+  }
 });
 
 // export routes that they be used in other files
