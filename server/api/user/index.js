@@ -81,6 +81,109 @@ router.post('/login', (req, res, next) => {
 });
 
 /**
+ * Add timeline
+ * @name addTimeLineData
+ * request.body:
+ * {
+ *   title: '',
+ *   content: ''
+ * }
+ */
+router.post('/add_timeline', (req, res, next) => {
+  UserThunks.updateTimeLineData(
+    {
+      reqBody: req.body,
+      reqSession: req.session
+    },
+    () => {
+      res.status(200).send({
+        message: 'success'
+      });
+    },
+    (err) => {
+      if (err) {
+        res.status(404).send({
+          message: err.error
+        });
+      } else {
+        // unhandled error
+        next(err);
+      }
+    }
+  );
+});
+
+/**
+ * Add timeline
+ * @name updateTimeLineData
+ * request.body:
+ * {
+ *   title: '',
+ *   content: ''
+ * }
+ */
+router.put('/update_timeline/:time', (req, res, next) => {
+  UserThunks.updateTimeLineData(
+    {
+      reqBody: req.body,
+      reqParams: req.params,
+      reqSession: req.session,
+      update: true
+    },
+    () => {
+      res.status(200).send({
+        message: 'success'
+      });
+    },
+    (err) => {
+      if (err) {
+        res.status(404).send({
+          message: err.error
+        });
+      } else {
+        // unhandled error
+        next(err);
+      }
+    }
+  );
+});
+
+/**
+ * Add timeline
+ * @name deleteTimeLineData
+ * request.body:
+ * {
+ *   title: '',
+ *   content: ''
+ * }
+ */
+router.put('/delete_timeline/:time', (req, res, next) => {
+  UserThunks.updateTimeLineData(
+    {
+      reqBody: req.body,
+      reqParams: req.params,
+      reqSession: req.session,
+      remove: true
+    },
+    () => {
+      res.status(200).send({
+        message: 'success'
+      });
+    },
+    (err) => {
+      if (err) {
+        res.status(404).send({
+          message: err.error
+        });
+      } else {
+        // unhandled error
+        next(err);
+      }
+    }
+  );
+});
+
+/**
  * user logout
  * @name userLogout
  *
