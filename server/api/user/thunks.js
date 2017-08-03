@@ -70,7 +70,7 @@ function authenticateUser(reqBody, onSuccess, onFailure) {
 
 function updateTimeLineData(params, onSuccess, onFailure) {
   const reqBody = params.reqBody;
-  const time = params.reqParams.time || null;
+  const time = params.reqParams || null;
   const remove = params.remove || false;
 
   User.findOne(
@@ -85,7 +85,7 @@ function updateTimeLineData(params, onSuccess, onFailure) {
             delete userTimeline[time];
           } else if (time) {
             // update process
-            userTimeline[time] = utils.getObjOwnProps(
+            userTimeline[time.time] = utils.getObjOwnProps(
               config.USER_TIMELINE_SCHEMA_PROPS,
               reqBody,
               userTimeline[time]
@@ -107,14 +107,15 @@ function updateTimeLineData(params, onSuccess, onFailure) {
             error: 'timeline not fount'
           });
         } else {
+          const keyForTimelineData = new Date().getTime();
+
           // add new timeline
-          userTimeline[new Date().getTime()] = utils.getObjOwnProps(
+          userTimeline[keyForTimelineData] = utils.getObjOwnProps(
             config.USER_TIMELINE_SCHEMA_PROPS,
             reqBody,
             {}
           );
         }
-
         User.findOneAndUpdate(
           { _id: params.reqSession.userId },
           { $set: { timeline: userTimeline } },
@@ -130,9 +131,29 @@ function updateTimeLineData(params, onSuccess, onFailure) {
   );
 }
 
+function listTimeline(params, onSuccess, onFailure) {
+  const id = params.reqSession.userId;
+
+  User.findOne(
+    { _id: id },
+    'timeline'
+  ).exec((err, user = []) => {
+    if (err) return onFailure(err);
+
+    if (!user) return onFailure({
+      status: 401,
+      error: 'user not found'
+    });
+    console.log('user', user);
+
+    return onSuccess(user.timeline);
+  });
+}
+
 module.exports = {
   registerUser,
   authenticateUser,
-  updateTimeLineData
+  updateTimeLineData,
+  listTimeline
 };
 

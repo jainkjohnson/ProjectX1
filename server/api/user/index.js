@@ -183,6 +183,28 @@ router.put('/delete_timeline/:time', (req, res, next) => {
   );
 });
 
+router.get('/timeline_list', (req, res, next) => {
+  UserThunks.listTimeline(
+    {
+      reqSession: req.session
+    },
+    (timelinedata) => {
+      res.status(200).send({
+        data: timelinedata
+      });
+    },
+    (err) => {
+      if (err) {
+        res.status(404).send({
+          message: err.error
+        });
+      } else {
+        next(err);
+      }
+    }
+  );
+});
+
 /**
  * user logout
  * @name userLogout
