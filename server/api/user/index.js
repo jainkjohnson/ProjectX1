@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const UserThunks = require('./thunks.js');
+const midWare = require('../middleware');
 
 /**
  * New user registration
@@ -89,7 +90,7 @@ router.post('/login', (req, res, next) => {
  *   content: ''
  * }
  */
-router.post('/add_timeline', (req, res, next) => {
+router.post('/add_timeline', midWare.requiresLogin, (req, res, next) => {
   UserThunks.updateTimeLineData(
     {
       reqBody: req.body,
@@ -114,7 +115,7 @@ router.post('/add_timeline', (req, res, next) => {
 });
 
 /**
- * Add timeline
+ * Update timeline
  * @name updateTimeLineData
  * request.body:
  * {
@@ -122,34 +123,36 @@ router.post('/add_timeline', (req, res, next) => {
  *   content: ''
  * }
  */
-router.put('/update_timeline/:time', (req, res, next) => {
-  UserThunks.updateTimeLineData(
-    {
-      reqBody: req.body,
-      reqParams: req.params,
-      reqSession: req.session,
-      update: true
-    },
-    () => {
-      res.status(200).send({
-        message: 'success'
-      });
-    },
-    (err) => {
-      if (err) {
-        res.status(404).send({
-          message: err.error
+router.put(
+  '/update_timeline/:time', midWare.requiresLogin, (req, res, next) => {
+    UserThunks.updateTimeLineData(
+      {
+        reqBody: req.body,
+        reqParams: req.params,
+        reqSession: req.session,
+        update: true
+      },
+      () => {
+        res.status(200).send({
+          message: 'success'
         });
-      } else {
-        // unhandled error
-        next(err);
+      },
+      (err) => {
+        if (err) {
+          res.status(404).send({
+            message: err.error
+          });
+        } else {
+          // unhandled error
+          next(err);
+        }
       }
-    }
-  );
-});
+    );
+  }
+);
 
 /**
- * Add timeline
+ * Delete timeline
  * @name deleteTimeLineData
  * request.body:
  * {
@@ -157,33 +160,35 @@ router.put('/update_timeline/:time', (req, res, next) => {
  *   content: ''
  * }
  */
-router.put('/delete_timeline/:time', (req, res, next) => {
-  UserThunks.updateTimeLineData(
-    {
-      reqBody: req.body,
-      reqParams: req.params,
-      reqSession: req.session,
-      remove: true
-    },
-    () => {
-      res.status(200).send({
-        message: 'success'
-      });
-    },
-    (err) => {
-      if (err) {
-        res.status(404).send({
-          message: err.error
+router.put(
+  '/delete_timeline/:time', midWare.requiresLogin, (req, res, next) => {
+    UserThunks.updateTimeLineData(
+      {
+        reqBody: req.body,
+        reqParams: req.params,
+        reqSession: req.session,
+        remove: true
+      },
+      () => {
+        res.status(200).send({
+          message: 'success'
         });
-      } else {
-        // unhandled error
-        next(err);
+      },
+      (err) => {
+        if (err) {
+          res.status(404).send({
+            message: err.error
+          });
+        } else {
+          // unhandled error
+          next(err);
+        }
       }
-    }
-  );
-});
+    );
+  }
+);
 
-router.get('/timeline_list', (req, res, next) => {
+router.get('/timeline_list', midWare.requiresLogin, (req, res, next) => {
   UserThunks.listTimeline(
     {
       reqSession: req.session
@@ -201,6 +206,39 @@ router.get('/timeline_list', (req, res, next) => {
       } else {
         next(err);
       }
+    }
+  );
+});
+
+/**
+ * user details
+ * @name getUserDetails
+ *
+ *  method: GET
+ *  endpoint: /user/details
+ *  response:
+ *    data : {
+ *      email: "",
+ *      username: ""
+ *    }
+ */
+router.get('/details', midWare.requiresLogin, (req, res, next) => {
+  UserThunks.getUserDetails(
+    req.session,
+    (details) => {
+      res.status(200).send({
+        data: details
+      });
+    },
+    (err) => {
+      if (err) {
+        return res.status(err.status).send({
+          message: err.error
+        });
+      }
+
+      // unhandled error
+      next(err);
     }
   );
 });

@@ -80,15 +80,15 @@ function updateTimeLineData(params, onSuccess, onFailure) {
       if (user) {
         const userTimeline = user.timeline || {};
 
-        if (userTimeline[time]) {
+        if (time && userTimeline[time.time]) {
           if (remove) {
-            delete userTimeline[time];
+            delete userTimeline[time.time];
           } else if (time) {
             // update process
             userTimeline[time.time] = utils.getObjOwnProps(
               config.USER_TIMELINE_SCHEMA_PROPS,
               reqBody,
-              userTimeline[time]
+              userTimeline[time.time]
             );
           } else {
             // Both `overwrite` and `remove` flags are `false` implies that
@@ -131,6 +131,41 @@ function updateTimeLineData(params, onSuccess, onFailure) {
   );
 }
 
+/**
+ * Get user data from `users` collection identified by session id
+ * @param {Object} reqSession
+ * @param {String} reqSession.userId
+ * @param {onSuccessCallback} onSuccess
+ * @param {onFailureCallback} onFailure
+ * @returns {*}
+ */
+function getUser(reqSession, onSuccess, onFailure) {
+  return User.findOne({ _id: reqSession.userId }, (err, user) => {
+    // Unexpected error
+    if (err) return onFailure(err);
+
+    onSuccess(user);
+  });
+}
+
+/**
+ * Get user's info from `users` collection identified by session id
+ * @param {Object} reqSession
+ * @param {onSuccessCallback} onSuccess
+ * @param {onFailureCallback} onFailure
+ * @returns {*}
+ */
+function getUserDetails(reqSession, onSuccess, onFailure) {
+  getUser(
+    reqSession,
+    (user) => onSuccess({
+      email: user.email,
+      username: user.username
+    }),
+    onFailure
+  );
+}
+
 function listTimeline(params, onSuccess, onFailure) {
   const id = params.reqSession.userId;
 
@@ -140,11 +175,12 @@ function listTimeline(params, onSuccess, onFailure) {
   ).exec((err, user = []) => {
     if (err) return onFailure(err);
 
-    if (!user) return onFailure({
-      status: 401,
-      error: 'user not found'
-    });
-    console.log('user', user);
+    if (!user) {
+      return onFailure({
+        status: 401,
+        error: 'user not found'
+      });
+    }
 
     return onSuccess(user.timeline);
   });
@@ -154,6 +190,7 @@ module.exports = {
   registerUser,
   authenticateUser,
   updateTimeLineData,
-  listTimeline
+  listTimeline,
+  getUserDetails
 };
 
