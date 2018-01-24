@@ -1,6 +1,4 @@
 const User = require('../../modals/user');
-const utils = require('../../utils');
-const config = require('../../config');
 
 function registerUser(reqBody, onSuccess, onFailure) {
   const { email, username, password } = reqBody.body;
@@ -68,69 +66,6 @@ function authenticateUser(reqBody, onSuccess, onFailure) {
   }
 }
 
-function updateTimeLineData(params, onSuccess, onFailure) {
-  const reqBody = params.reqBody;
-  const time = params.reqParams || null;
-  const remove = params.remove || false;
-
-  User.findOne(
-    { _id: params.reqSession.userId },
-    (err, user) => {
-      if (err) return onFailure(err);
-      if (user) {
-        const userTimeline = user.timeline || {};
-
-        if (time && userTimeline[time.time]) {
-          if (remove) {
-            delete userTimeline[time.time];
-          } else if (time) {
-            // update process
-            userTimeline[time.time] = utils.getObjOwnProps(
-              config.USER_TIMELINE_SCHEMA_PROPS,
-              reqBody,
-              userTimeline[time.time]
-            );
-          } else {
-            // Both `overwrite` and `remove` flags are `false` implies that
-            // user is trying to 'add' an existing book in user's bookshelf.
-            // But same bookId already exists in user's Bookshelf.
-            // HTTP 409 Conflict
-            return onFailure({
-              status: 409,
-              error: 'Conflict while adding timeline'
-            });
-          }
-        } else if (time) {
-          // there is not timeline with this time
-          onFailure({
-            status: 404,
-            error: 'timeline not fount'
-          });
-        } else {
-          const keyForTimelineData = new Date().getTime();
-
-          // add new timeline
-          userTimeline[keyForTimelineData] = utils.getObjOwnProps(
-            config.USER_TIMELINE_SCHEMA_PROPS,
-            reqBody,
-            {}
-          );
-        }
-        User.findOneAndUpdate(
-          { _id: params.reqSession.userId },
-          { $set: { timeline: userTimeline } },
-          (updateErr) => {
-            // Unexpected DB error
-            if (updateErr) return onFailure(updateErr);
-
-            return onSuccess();
-          }
-        );
-      }
-    }
-  );
-}
-
 /**
  * Get user data from `users` collection identified by session id
  * @param {Object} reqSession
@@ -166,31 +101,9 @@ function getUserDetails(reqSession, onSuccess, onFailure) {
   );
 }
 
-function listTimeline(params, onSuccess, onFailure) {
-  const id = params.reqSession.userId;
-
-  User.findOne(
-    { _id: id },
-    'timeline'
-  ).exec((err, user = []) => {
-    if (err) return onFailure(err);
-
-    if (!user) {
-      return onFailure({
-        status: 401,
-        error: 'user not found'
-      });
-    }
-
-    return onSuccess(user.timeline);
-  });
-}
-
 module.exports = {
   registerUser,
   authenticateUser,
-  updateTimeLineData,
-  listTimeline,
   getUserDetails
 };
 

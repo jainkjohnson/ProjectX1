@@ -6,6 +6,7 @@ const AppContainer = () => (
   <div>
     <Header />
     <ModalForAddToDo />
+    <i className="fa fa-address-book" />
   </div>
 );
 

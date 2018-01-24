@@ -30,6 +30,7 @@ export default class Header extends React.Component {
           <label>ToDo List</label>
           <div className={styles.button}>
             <Button label="ADD" onAddClick={this.onAddClick} />
+            <i className="fa fa-address-book" />
           </div>
       </div>
     );

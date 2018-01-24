@@ -4,6 +4,7 @@ const session = require('express-session');
 
 const express = require('express');
 const userApi = require('./api/user');
+const timelineApi = require('./api/timeline');
 
 const app = express();
 const bodyParser = require('body-parser');
@@ -38,6 +39,7 @@ app.use(session({
 }));
 
 app.use('/user', userApi);
+app.use('/timeline', timelineApi);
 
 // setting up the server's listening port
 console.log('port : ', config.API_PORT);

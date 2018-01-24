@@ -10,7 +10,10 @@ const config = {
 
   // jump back to the webpack directory  
   context: path.resolve(__dirname, '..'),
-  entry: './index.js',
+  entry: [
+    "font-awesome-webpack!./src/theme/font-awesome.config.js",
+    './index.js',
+  ],
 
   // dev server configuration
   devServer: {
